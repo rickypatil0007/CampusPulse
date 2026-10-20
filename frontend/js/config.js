@@ -3,9 +3,9 @@
  */
 export const CONFIG = {
   // Base URL for the Express REST API
-  API_BASE_URL: window.location.origin.includes(':3000') 
-    ? '/api' 
-    : 'http://localhost:3000/api',
+  API_BASE_URL: (window.location.hostname === 'localhost' && window.location.port === '5500') 
+    ? 'http://localhost:3000/api' 
+    : '/api',
 
   // Supabase Client Settings
   SUPABASE_URL: window.ENV_SUPABASE_URL || 'https://bzuwuroaidbroeshcnzw.supabase.co',

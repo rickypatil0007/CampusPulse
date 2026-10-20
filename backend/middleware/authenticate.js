@@ -35,8 +35,13 @@ export async function authenticate(req, res, next) {
     if (token.startsWith('mock_jwt_token_')) {
       const mockId = token.replace('mock_jwt_token_', '');
       const isAdmin = mockId.includes('admin');
+      const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const realId = UUID_REGEX.test(mockId) 
+        ? mockId 
+        : (isAdmin ? '0101e9c0-1df6-4418-b34c-85788f15a24b' : 'f09933af-ebef-4b75-8b76-5983c9056f23');
+
       req.user = {
-        id: mockId,
+        id: realId,
         email: isAdmin ? 'faculty.admin@college.edu' : 'alex.mercer@college.edu',
         full_name: isAdmin ? 'Faculty Coordinator' : 'Alex Mercer',
         role: isAdmin ? 'admin' : 'student'
@@ -67,20 +72,22 @@ export async function authenticate(req, res, next) {
     }
 
     // Retrieve verified profile role from database
-    const { data: profile, error: profileError } = await supabase
+    let { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('id, full_name, email, role')
       .eq('id', user.id)
       .single();
 
     if (profileError || !profile) {
-      return res.status(401).json({
-        success: false,
-        error: {
-          code: 'PROFILE_NOT_FOUND',
-          message: 'User profile not found in database.'
-        }
-      });
+      // Auto-upsert profile if not yet existing
+      const newProfile = {
+        id: user.id,
+        full_name: user.user_metadata?.full_name || (user.email ? user.email.split('@')[0] : 'Student'),
+        email: user.email || 'student@college.edu',
+        role: (user.user_metadata?.role || (user.email?.includes('admin') ? 'admin' : 'student'))
+      };
+      await supabase.from('profiles').upsert(newProfile);
+      profile = newProfile;
     }
 
     req.user = profile;

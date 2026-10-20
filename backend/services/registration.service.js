@@ -41,18 +41,35 @@ registrationsMemory.forEach(r => {
   duplicateHashTable.set(`${r.event_id}:${r.user_id}`, { status: r.status, id: r.id });
 });
 
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function resolveUserId(user) {
+  if (!user) return null;
+  const id = typeof user === 'string' ? user : user.id;
+  if (UUID_REGEX.test(id)) return id;
+  // Map known demo accounts to their database UUIDs
+  const email = typeof user === 'object' ? user.email : '';
+  if (email === 'alex.mercer@college.edu' || id === 'usr_student_01' || id === 'usr_student_02') {
+    return 'f09933af-ebef-4b75-8b76-5983c9056f23';
+  }
+  if (email === 'faculty.admin@college.edu' || id === 'usr_admin_01') {
+    return '0101e9c0-1df6-4418-b34c-85788f15a24b';
+  }
+  return id;
+}
 
 export const RegistrationService = {
   /**
    * Register a student for an event
    */
   async register(eventId, user) {
-    const compositeKey = `${eventId}:${user.id}`;
+    const effectiveUserId = resolveUserId(user);
+    const compositeKey = `${eventId}:${effectiveUserId}`;
+    const legacyKey = `${eventId}:${user.id}`;
 
     // 1. In-Memory Hash Table Pre-flight Duplicate Check (O(1))
-    if (duplicateHashTable.has(compositeKey)) {
-      const existing = duplicateHashTable.get(compositeKey);
+    if (duplicateHashTable.has(compositeKey) || duplicateHashTable.has(legacyKey)) {
+      const existing = duplicateHashTable.get(compositeKey) || duplicateHashTable.get(legacyKey);
       if (existing.status === 'CONFIRMED' || existing.status === 'WAITLISTED') {
         const error = new Error('You already hold an active confirmed or waitlisted seat for this event.');
         error.status = 409;
@@ -62,11 +79,11 @@ export const RegistrationService = {
     }
 
     // 2. Execute Registration via Supabase if UUIDs are present
-    if (supabase && UUID_REGEX.test(eventId) && UUID_REGEX.test(user.id)) {
+    if (supabase && UUID_REGEX.test(eventId) && UUID_REGEX.test(effectiveUserId)) {
       try {
         const { data, error } = await supabase.rpc('register_for_event', {
           p_event_id: eventId,
-          p_user_id: user.id
+          p_user_id: effectiveUserId
         });
 
         if (!error && data) {
@@ -79,6 +96,23 @@ export const RegistrationService = {
 
           // Update Hash Table cache
           duplicateHashTable.set(compositeKey, { status: data.status });
+          duplicateHashTable.set(legacyKey, { status: data.status });
+
+          // Also mirror in local memory store for instant responsiveness
+          registrationsMemory = registrationsMemory.filter(r => !(r.event_id === eventId && (r.user_id === effectiveUserId || r.user_id === user.id)));
+          registrationsMemory.push({
+            id: 'reg_db_' + Math.random().toString(36).substr(2, 9),
+            event_id: eventId,
+            user_id: effectiveUserId,
+            full_name: user.full_name || 'Student',
+            email: user.email,
+            status: data.status,
+            waitlist_number: data.waitlistPosition || null,
+            registered_at: new Date().toISOString(),
+            confirmed_at: data.status === 'CONFIRMED' ? new Date().toISOString() : null,
+            waitlisted_at: data.status === 'WAITLISTED' ? new Date().toISOString() : null
+          });
+
           return data;
         }
       } catch (err) {
@@ -164,13 +198,15 @@ export const RegistrationService = {
    * Cancel an active registration and atomically promote earliest waitlist peer
    */
   async cancel(eventId, user) {
-    const compositeKey = `${eventId}:${user.id}`;
+    const effectiveUserId = resolveUserId(user);
+    const compositeKey = `${eventId}:${effectiveUserId}`;
+    const legacyKey = `${eventId}:${user.id}`;
 
-    if (supabase && UUID_REGEX.test(eventId) && UUID_REGEX.test(user.id)) {
+    if (supabase && UUID_REGEX.test(eventId) && UUID_REGEX.test(effectiveUserId)) {
       try {
         const { data, error } = await supabase.rpc('cancel_registration', {
           p_event_id: eventId,
-          p_user_id: user.id
+          p_user_id: effectiveUserId
         });
         if (!error && data) {
           if (!data.success) {
@@ -181,6 +217,8 @@ export const RegistrationService = {
           }
 
           duplicateHashTable.delete(compositeKey);
+          duplicateHashTable.delete(legacyKey);
+          registrationsMemory = registrationsMemory.filter(r => !(r.event_id === eventId && (r.user_id === effectiveUserId || r.user_id === user.id)));
           return data;
         }
       } catch (err) {
@@ -190,7 +228,7 @@ export const RegistrationService = {
     }
 
     const index = registrationsMemory.findIndex(
-      r => r.event_id === eventId && r.user_id === user.id && r.status !== 'CANCELLED'
+      r => r.event_id === eventId && (r.user_id === effectiveUserId || r.user_id === user.id) && r.status !== 'CANCELLED'
     );
 
     if (index === -1) {
@@ -206,6 +244,7 @@ export const RegistrationService = {
     existingReg.status = 'CANCELLED';
     existingReg.cancelled_at = new Date().toISOString();
     duplicateHashTable.delete(compositeKey);
+    duplicateHashTable.delete(legacyKey);
 
     let promotedUser = null;
 
@@ -238,58 +277,86 @@ export const RegistrationService = {
    * Retrieve registrations for the active student
    */
   async getUserRegistrations(userId) {
-    if (supabase && UUID_REGEX.test(userId)) {
+    const effectiveUserId = resolveUserId(userId);
+    let dbResults = [];
+
+    if (supabase && UUID_REGEX.test(effectiveUserId)) {
       try {
         const { data, error } = await supabase
           .from('registrations')
           .select('*, events(*)')
-          .eq('user_id', userId)
+          .eq('user_id', effectiveUserId)
+          .neq('status', 'CANCELLED')
           .order('registered_at', { ascending: false });
-        if (!error && Array.isArray(data)) return data;
+
+        if (!error && Array.isArray(data)) {
+          dbResults = data.map(r => ({
+            ...r,
+            queueRank: r.waitlist_number || (r.status === 'WAITLISTED' ? 1 : null)
+          }));
+        }
       } catch (err) {
         console.warn('Supabase getUserRegistrations error, checking memory store:', err.message);
       }
     }
 
-    const userRegs = registrationsMemory.filter(r => r.user_id === userId);
-    const results = [];
+    // Combine with memory registrations
+    const memoryRegs = registrationsMemory.filter(
+      r => (r.user_id === effectiveUserId || r.user_id === userId) && r.status !== 'CANCELLED'
+    );
 
-    for (const reg of userRegs) {
-      const event = await EventsService.getEventById(reg.event_id);
-      let queueRank = null;
+    const combined = [...dbResults];
+    for (const reg of memoryRegs) {
+      if (!combined.some(c => c.event_id === reg.event_id)) {
+        const event = await EventsService.getEventById(reg.event_id);
+        let queueRank = null;
 
-      if (reg.status === 'WAITLISTED') {
-        const waitlist = registrationsMemory
-          .filter(r => r.event_id === reg.event_id && r.status === 'WAITLISTED' && r.waitlist_number <= reg.waitlist_number);
-        queueRank = waitlist.length;
+        if (reg.status === 'WAITLISTED') {
+          const waitlist = registrationsMemory
+            .filter(r => r.event_id === reg.event_id && r.status === 'WAITLISTED' && r.waitlist_number <= reg.waitlist_number);
+          queueRank = waitlist.length;
+        }
+
+        combined.push({
+          ...reg,
+          events: event,
+          queueRank
+        });
       }
-
-      results.push({
-        ...reg,
-        events: event,
-        queueRank
-      });
     }
 
-    return results;
+    return combined;
   },
 
   /**
    * Retrieve participant rosters for an event (Admin action)
    */
   async getEventParticipants(eventId) {
+    let dbParticipants = [];
     if (supabase && UUID_REGEX.test(eventId)) {
       try {
         const { data, error } = await supabase
           .from('registrations')
           .select('*, profiles(full_name, email)')
-          .eq('event_id', eventId);
-        if (!error && Array.isArray(data)) return data;
+          .eq('event_id', eventId)
+          .neq('status', 'CANCELLED');
+
+        if (!error && Array.isArray(data)) {
+          dbParticipants = data;
+        }
       } catch (err) {
         console.warn('Supabase getEventParticipants error, checking memory store:', err.message);
       }
     }
 
-    return registrationsMemory.filter(r => r.event_id === eventId);
+    const memParticipants = registrationsMemory.filter(r => r.event_id === eventId && r.status !== 'CANCELLED');
+    const combined = [...dbParticipants];
+    for (const mem of memParticipants) {
+      if (!combined.some(c => c.user_id === mem.user_id)) {
+        combined.push(mem);
+      }
+    }
+
+    return combined;
   }
 };

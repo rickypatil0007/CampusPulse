@@ -105,6 +105,13 @@
         try {
           setButtonLoading(btnSubmit, true, 'Creating Account...');
           await Auth.signUp(fullName, email, password);
+
+          // Verify token exists, otherwise attempt login to acquire session
+          const token = localStorage.getItem('campuspulse_auth_token');
+          if (!token) {
+            await Auth.login(email, password);
+          }
+
           showToast('Account created! Welcome to CampusPulse 🎉', 'success');
 
           setTimeout(() => {

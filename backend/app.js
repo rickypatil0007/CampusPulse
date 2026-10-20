@@ -9,6 +9,7 @@ import eventsRouter from './routes/events.routes.js';
 import registrationsRouter from './routes/registrations.routes.js';
 import adminRouter from './routes/admin.routes.js';
 import profileRouter from './routes/profile.routes.js';
+import authRouter from './routes/auth.routes.js';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -69,6 +70,7 @@ app.get('/api/config', (req, res) => {
 });
 
 // Mount Application API Routers
+app.use('/api/auth', authRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api', registrationsRouter);
 app.use('/api/admin', adminRouter);

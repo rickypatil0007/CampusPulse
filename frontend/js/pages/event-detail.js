@@ -163,9 +163,14 @@ function renderRegistrationCard() {
         </p>
       </div>
 
-      <button id="cancelRegistrationBtn" class="btn btn-secondary btn-full">
-        Cancel Registration
-      </button>
+      <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+        <a href="dashboard.html" class="btn btn-primary btn-full">
+          🎟️ View in My Dashboard &rarr;
+        </a>
+        <button id="cancelRegistrationBtn" class="btn btn-secondary btn-full">
+          Cancel Registration
+        </button>
+      </div>
 
       <div class="dsa-badge-notice">
         <span>🔄</span>
@@ -196,9 +201,14 @@ function renderRegistrationCard() {
         You will be automatically promoted to <strong>CONFIRMED</strong> as soon as a registered attendee cancels their reservation.
       </p>
 
-      <button id="withdrawWaitlistBtn" class="btn btn-secondary btn-full">
-        Withdraw from Waitlist
-      </button>
+      <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+        <a href="dashboard.html" class="btn btn-primary btn-full">
+          📊 View Queue Position in Dashboard &rarr;
+        </a>
+        <button id="withdrawWaitlistBtn" class="btn btn-secondary btn-full">
+          Withdraw from Waitlist
+        </button>
+      </div>
 
       <div class="dsa-badge-notice">
         <span>⚡</span>

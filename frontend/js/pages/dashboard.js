@@ -57,6 +57,9 @@ function updateStats() {
     
     document.getElementById('statNextEventDays').textContent = diffDays <= 1 ? 'Tomorrow!' : `${diffDays} Days`;
     document.getElementById('statNextEventTitle').textContent = nextEvent.title;
+  } else if (confirmed.length > 0 && confirmed[0].events) {
+    document.getElementById('statNextEventDays').textContent = 'Ready 🎟️';
+    document.getElementById('statNextEventTitle').textContent = confirmed[0].events.title;
   } else {
     document.getElementById('statNextEventDays').textContent = '—';
     document.getElementById('statNextEventTitle').textContent = 'No upcoming events';
