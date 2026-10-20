@@ -45,8 +45,8 @@ app.use(express.urlencoded({ extended: true }));
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, '../frontend')));
 
-// Health Check Endpoint
-app.get('/api/health', (req, res) => {
+// Health Check Endpoints (both /api/health and /health)
+app.get(['/api/health', '/health'], (req, res) => {
   res.json({
     success: true,
     data: {
@@ -59,7 +59,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Public Client Config Endpoint
-app.get('/api/config', (req, res) => {
+app.get(['/api/config', '/config'], (req, res) => {
   res.json({
     success: true,
     data: {
@@ -69,12 +69,21 @@ app.get('/api/config', (req, res) => {
   });
 });
 
-// Mount Application API Routers
+// Mount Application API Routers (supports both /api/* and /* for Vercel)
 app.use('/api/auth', authRouter);
+app.use('/auth', authRouter);
+
 app.use('/api/events', eventsRouter);
-app.use('/api', registrationsRouter);
+app.use('/events', eventsRouter);
+
 app.use('/api/admin', adminRouter);
+app.use('/admin', adminRouter);
+
 app.use('/api/me', profileRouter);
+app.use('/me', profileRouter);
+
+app.use('/api', registrationsRouter);
+app.use('/', registrationsRouter);
 
 // 404 and Centralized Error Handling
 app.use(notFoundHandler);

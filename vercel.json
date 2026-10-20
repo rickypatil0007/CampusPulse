@@ -1,27 +1,61 @@
 {
-  "version": 2,
-  "builds": [
+  "cleanUrls": true,
+  "rewrites": [
     {
-      "src": "api/index.js",
-      "use": "@vercel/node"
+      "source": "/api/:path*",
+      "destination": "/api/index.js"
     },
     {
-      "src": "frontend/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/index.js"
+      "source": "/api",
+      "destination": "/api/index.js"
     },
     {
-      "src": "/api",
-      "dest": "/api/index.js"
+      "source": "/",
+      "destination": "/frontend/index.html"
     },
     {
-      "src": "/(.*)",
-      "dest": "/frontend/$1"
+      "source": "/events",
+      "destination": "/frontend/events.html"
+    },
+    {
+      "source": "/event",
+      "destination": "/frontend/event.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/frontend/login.html"
+    },
+    {
+      "source": "/signup",
+      "destination": "/frontend/signup.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/frontend/dashboard.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/frontend/admin.html"
+    },
+    {
+      "source": "/admin-events",
+      "destination": "/frontend/admin-events.html"
+    },
+    {
+      "source": "/admin-participants",
+      "destination": "/frontend/admin-participants.html"
+    },
+    {
+      "source": "/my-registrations",
+      "destination": "/frontend/my-registrations.html"
+    },
+    {
+      "source": "/dsa-lab",
+      "destination": "/frontend/dsa-lab.html"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/frontend/:path*"
     }
   ]
 }
