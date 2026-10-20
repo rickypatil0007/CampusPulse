@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Events — Admin — CampusPulse</title>
+  
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <style>
+    .admin-controls-bar {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-small);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .events-manage-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.75rem;
+    }
+
+    .manage-card {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-small);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: var(--transition-bounce);
+    }
+
+    .manage-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: var(--shadow-medium);
+    }
+
+    .manage-card-header {
+      padding: 1.25rem;
+      border-bottom: var(--border-medium);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      background: var(--color-paper);
+    }
+
+    .manage-card-body {
+      padding: 1.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Modal Form Styles */
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .form-grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-logo" aria-label="CampusPulse Home">
+        <span class="brand-icon">🎓</span>
+        <span>CampusPulse</span>
+      </a>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation">☰</button>
+
+      <nav class="main-nav" id="mainNav">
+        <a href="events.html" class="nav-link">Explore Events</a>
+        <a href="dsa-lab.html" class="nav-link">DSA Lab 🕹️</a>
+        <a href="dashboard.html" class="nav-link">My Dashboard</a>
+        <a href="admin.html" class="nav-link">Admin Console</a>
+        <a href="admin-events.html" class="nav-link active">Manage Events</a>
+        <a href="admin-participants.html" class="nav-link">Rosters & Queues</a>
+        
+        <div class="nav-auth-group" id="navAuthGroup">
+          <div class="user-badge" id="navUserBadge">
+            <div class="user-avatar" id="navUserAvatar" style="background: var(--color-coral); color: #FFF;">A</div>
+            <span id="navUserName">Administrator</span>
+            <button class="btn btn-ghost btn-sm" id="navLogoutBtn" style="padding: 0.2rem 0.5rem; margin-left: 0.25rem;">Logout</button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="container">
+
+      <div style="margin-bottom: 2rem;">
+        <span class="category-sticker" style="position: static; display: inline-block; margin-bottom: 0.5rem; background: var(--color-coral); color: #FFF;">
+          ⚙️ Event Operations
+        </span>
+        <h1>Event Catalogue & Capacity Management</h1>
+        <p style="font-size: var(--text-base); color: var(--color-ink-muted); margin: 0;">
+          Create new symposiums, modify capacities safely, publish drafts, and track waitlist dynamics.
+        </p>
+      </div>
+
+      <!-- Controls & Create Action -->
+      <section class="admin-controls-bar">
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="statusFilterPills">
+          <button class="tab-pill active" data-filter="ALL">All Events</button>
+          <button class="tab-pill" data-filter="PUBLISHED">Published</button>
+          <button class="tab-pill" data-filter="DRAFT">Drafts</button>
+          <button class="tab-pill" data-filter="CANCELLED">Cancelled</button>
+        </div>
+
+        <button id="openCreateModalBtn" class="btn btn-primary">
+          ➕ Create New Event
+        </button>
+      </section>
+
+      <!-- Manage Events Grid -->
+      <div class="events-manage-grid" id="eventsManageGrid">
+        <!-- Rendered by admin-events.js -->
+      </div>
+
+    </div>
+  </main>
+
+  <!-- CREATE EVENT MODAL -->
+  <div class="modal-backdrop" id="createEventModal" style="display: none;">
+    <div class="modal-dialog" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Create New College Event</h3>
+        <button class="modal-close" id="closeCreateModalBtn">&times;</button>
+      </div>
+      
+      <form id="createEventForm">
+        <div class="modal-body" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <label for="createTitle" class="form-label">Event Title *</label>
+            <input type="text" id="createTitle" class="input-text" required placeholder="e.g. HackPulse 2026: 24h Hackathon">
+          </div>
+
+          <div class="form-grid-2">
+            <div>
+              <label for="createCategory" class="form-label">Category *</label>
+              <select id="createCategory" class="select-box" required>
+                <option value="Hackathon">Hackathon</option>
+                <option value="Workshop">Workshop</option>
+                <option value="Technical">Technical</option>
+                <option value="Cultural">Cultural</option>
+                <option value="Sports">Sports</option>
+                <option value="Entrepreneurship">Entrepreneurship</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="createCapacity" class="form-label">Total Seat Capacity *</label>
+              <input type="number" id="createCapacity" class="input-text" required min="1" max="10000" value="50">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div>
+              <label for="createStartsAt" class="form-label">Date & Time *</label>
+              <input type="datetime-local" id="createStartsAt" class="input-text" required>
+            </div>
+
+            <div>
+              <label for="createVenue" class="form-label">Venue / Room *</label>
+              <input type="text" id="createVenue" class="input-text" required placeholder="e.g. Innovation Hub Hall B">
+            </div>
+          </div>
+
+          <div>
+            <label for="createDescription" class="form-label">Event Description *</label>
+            <textarea id="createDescription" class="textarea-box" rows="3" required placeholder="Describe objectives, schedule, guidelines, and rules..."></textarea>
+          </div>
+
+          <div>
+            <label for="createStatus" class="form-label">Initial Status</label>
+            <select id="createStatus" class="select-box">
+              <option value="PUBLISHED">Published (Immediately open for registrations)</option>
+              <option value="DRAFT">Draft (Unlisted, prepare before launch)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" id="cancelCreateModalBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="submitCreateBtn">Create Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT EVENT MODAL -->
+  <div class="modal-backdrop" id="editEventModal" style="display: none;">
+    <div class="modal-dialog" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Event & Capacity</h3>
+        <button class="modal-close" id="closeEditModalBtn">&times;</button>
+      </div>
+
+      <form id="editEventForm">
+        <input type="hidden" id="editEventId">
+        <div class="modal-body" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <label for="editTitle" class="form-label">Event Title</label>
+            <input type="text" id="editTitle" class="input-text" required>
+          </div>
+
+          <div class="form-grid-2">
+            <div>
+              <label for="editCapacity" class="form-label">Seat Capacity *</label>
+              <input type="number" id="editCapacity" class="input-text" required min="1">
+              <p style="font-size: var(--text-xs); color: var(--color-ink-muted); margin-top: 0.25rem;" id="editCapacityNotice">
+                Min capacity: cannot be below confirmed count.
+              </p>
+            </div>
+
+            <div>
+              <label for="editVenue" class="form-label">Venue</label>
+              <input type="text" id="editVenue" class="input-text" required>
+            </div>
+          </div>
+
+          <div>
+            <label for="editDescription" class="form-label">Description</label>
+            <textarea id="editDescription" class="textarea-box" rows="3"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" id="cancelEditModalBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="submitEditBtn">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="js/pages/admin-events.js"></script>
+</body>
+</html>

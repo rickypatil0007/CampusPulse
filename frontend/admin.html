@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Console — CampusPulse</title>
+  
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <style>
+    .admin-header {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-medium);
+      padding: 2rem 2.25rem;
+      margin-bottom: 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .admin-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .metric-card {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-small);
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: var(--color-purple);
+    }
+
+    .metric-card.m-green::before { background: var(--color-green); }
+    .metric-card.m-yellow::before { background: var(--color-yellow); }
+    .metric-card.m-coral::before { background: var(--color-coral); }
+
+    .metric-number {
+      font-size: 2.5rem;
+      font-family: var(--font-display);
+      font-weight: 800;
+      color: var(--color-ink);
+      line-height: 1;
+      margin: 0.5rem 0 0.25rem 0;
+    }
+
+    .metric-label {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-ink-muted);
+    }
+
+    .admin-table-container {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-small);
+      overflow-x: auto;
+    }
+
+    .retro-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .retro-table th {
+      background: var(--color-paper);
+      padding: 1rem 1.25rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: var(--border-strong);
+      color: var(--color-ink);
+    }
+
+    .retro-table td {
+      padding: 1.25rem;
+      border-bottom: var(--border-subtle);
+      font-size: var(--text-sm);
+      vertical-align: middle;
+    }
+
+    .retro-table tr:hover {
+      background: rgba(144, 71, 255, 0.03);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-logo" aria-label="CampusPulse Home">
+        <span class="brand-icon">🎓</span>
+        <span>CampusPulse</span>
+      </a>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation">☰</button>
+
+      <nav class="main-nav" id="mainNav">
+        <a href="events.html" class="nav-link">Explore Events</a>
+        <a href="dsa-lab.html" class="nav-link">DSA Lab 🕹️</a>
+        <a href="dashboard.html" class="nav-link">My Dashboard</a>
+        <a href="admin.html" class="nav-link active">Admin Console</a>
+        <a href="admin-events.html" class="nav-link">Manage Events</a>
+        <a href="admin-participants.html" class="nav-link">Rosters & Queues</a>
+        
+        <div class="nav-auth-group" id="navAuthGroup">
+          <div class="user-badge" id="navUserBadge">
+            <div class="user-avatar" id="navUserAvatar" style="background: var(--color-coral); color: #FFF;">A</div>
+            <span id="navUserName">Administrator</span>
+            <button class="btn btn-ghost btn-sm" id="navLogoutBtn" style="padding: 0.2rem 0.5rem; margin-left: 0.25rem;">Logout</button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="container">
+
+      <!-- Admin Header -->
+      <section class="admin-header">
+        <div>
+          <span class="category-sticker" style="position: static; display: inline-block; margin-bottom: 0.5rem; background: var(--color-coral); color: #FFF;">
+            🛡️ Administrative Authority
+          </span>
+          <h1 style="margin-bottom: 0.25rem;">Executive Control Center</h1>
+          <p style="color: var(--color-ink-muted); font-weight: 600; margin: 0;">
+            Real-time event capacity monitoring, participant registries, and automatic FIFO waitlist engine.
+          </p>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <a href="admin-events.html" class="btn btn-primary">
+            ➕ Create New Event
+          </a>
+          <a href="admin-participants.html" class="btn btn-secondary">
+            👥 Inspect Live Rosters
+          </a>
+        </div>
+      </section>
+
+      <!-- Key Metrics Row -->
+      <section class="admin-metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">Total Events</div>
+          <div class="metric-number" id="metricTotalEvents">0</div>
+          <div style="font-size: var(--text-xs); color: var(--color-purple); font-weight: 700;" id="metricPublishedEvents">0 Published</div>
+        </div>
+
+        <div class="metric-card m-green">
+          <div class="metric-label">Confirmed Attendees</div>
+          <div class="metric-number" id="metricConfirmedSeats">0</div>
+          <div style="font-size: var(--text-xs); color: var(--color-green-dark); font-weight: 700;">Guaranteed Seats Claimed</div>
+        </div>
+
+        <div class="metric-card m-yellow">
+          <div class="metric-label">Waitlisted Candidates</div>
+          <div class="metric-number" id="metricWaitlistCount">0</div>
+          <div style="font-size: var(--text-xs); color: #B45309; font-weight: 700;">In FIFO Queues</div>
+        </div>
+
+        <div class="metric-card m-coral">
+          <div class="metric-label">Overall Utilization</div>
+          <div class="metric-number" id="metricUtilization">0%</div>
+          <div style="font-size: var(--text-xs); color: var(--color-coral); font-weight: 700;" id="metricCapacityRatio">0 / 0 Seats</div>
+        </div>
+      </section>
+
+      <!-- Active Events Capacity Ledger -->
+      <section style="margin-bottom: 3rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="margin: 0;">📊 Live Event Capacity Status</h2>
+            <p style="color: var(--color-ink-muted); margin: 0; font-size: var(--text-sm);">Monitor confirmed seats, fill percentages, and waitlist queues</p>
+          </div>
+          <a href="admin-events.html" class="btn btn-ghost btn-sm">Manage All Events &rarr;</a>
+        </div>
+
+        <div class="admin-table-container">
+          <table class="retro-table">
+            <thead>
+              <tr>
+                <th>Event Title & Category</th>
+                <th>Date & Venue</th>
+                <th>Capacity Fill</th>
+                <th>Waitlist Queue</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="adminEventsTableBody">
+              <tr>
+                <td colspan="6" style="text-align: center; padding: 3rem;">
+                  <span class="spinner-8bit" style="width: 24px; height: 24px; border-width: 4px; border-color: var(--color-purple); border-top-color: transparent;"></span>
+                  <p style="margin-top: 0.75rem; font-weight: 700;">Loading metrics...</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script type="module" src="js/pages/admin-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+/* ==========================================================================
+   CampusPulse Global Styles & Resets
+   ========================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--color-ink);
+  background-color: var(--color-paper);
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(36, 32, 68, 0.05) 1px, transparent 0);
+  background-size: 24px 24px;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   Typography Rules (Optical adjustments per redesign-existing-projects skill)
+   ========================================================================== */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--color-ink);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+h1 { font-size: clamp(2rem, 5vw, var(--text-5xl)); margin-bottom: 1.25rem; }
+h2 { font-size: clamp(1.5rem, 3.5vw, var(--text-3xl)); margin-bottom: 1rem; }
+h3 { font-size: clamp(1.2rem, 2.5vw, var(--text-2xl)); margin-bottom: 0.75rem; }
+h4 { font-size: var(--text-xl); margin-bottom: 0.5rem; }
+
+p {
+  margin-bottom: 1rem;
+  max-width: 68ch; /* Prevent body lines stretching too wide */
+  color: #383458;
+}
+
+a {
+  color: var(--color-purple);
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-purple-dark);
+  text-decoration: underline;
+}
+
+/* Monospace & DSA code typography */
+code, kbd, pre, samp {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* Arcade Stat Numbers */
+.stat-arcade {
+  font-family: var(--font-arcade);
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   Accessible Keyboard Focus Indicator
+   ========================================================================== */
+:focus-visible {
+  outline: 3px solid var(--color-purple);
+  outline-offset: 3px;
+}
+
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Custom 8-Bit Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-paper);
+  border-left: var(--border-subtle);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-yellow);
+  border: var(--border-subtle);
+  border-radius: var(--radius-xs);
+  box-shadow: inset -1px -1px 0 var(--color-ink);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-pink);
+}

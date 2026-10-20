@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusPulse — College Event Registration & Waitlist System</title>
+  <meta name="description" content="A full-stack, responsive college event registration platform powered by Queue, Hash Table, and Merge Sort algorithms with a playful 8-bit maximalist design.">
+
+  <!-- Core Design System CSS -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <style>
+    /* Landing-specific Scroll & Hero Styles */
+    .hero-section {
+      padding-block: 4rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 3.5rem;
+      align-items: center;
+    }
+
+    .hero-badge-wrap {
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-title-highlight {
+      background: linear-gradient(120deg, var(--color-yellow) 0%, var(--color-pink) 100%);
+      padding-inline: 0.35rem;
+      border-radius: var(--radius-xs);
+      box-shadow: 2px 2px 0 var(--color-ink);
+      color: var(--color-ink);
+      display: inline-block;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-mascot-card {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-large);
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .mascot-avatar {
+      font-size: 6rem;
+      line-height: 1;
+      margin-bottom: 1rem;
+      filter: drop-shadow(4px 4px 0 var(--color-ink));
+    }
+
+    .mascot-speech {
+      background: var(--color-yellow-light);
+      border: var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1.25rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--text-sm);
+      box-shadow: var(--shadow-tiny);
+      margin-top: 1rem;
+      position: relative;
+    }
+
+    .mascot-speech::after {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 0 10px 10px 10px;
+      border-style: solid;
+      border-color: transparent transparent var(--color-ink) transparent;
+    }
+
+    /* Scroll Reveal Elements */
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .reveal-on-scroll.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Section Highlights */
+    .section-header {
+      text-align: center;
+      max-width: 680px;
+      margin-inline: auto;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-tag {
+      display: inline-block;
+      background: var(--color-yellow);
+      border: var(--border-subtle);
+      border-radius: var(--radius-pill);
+      padding: 0.25rem 0.85rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      box-shadow: var(--shadow-tiny);
+      margin-bottom: 0.75rem;
+    }
+
+    /* DSA Superpowers Grid */
+    .dsa-showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-bottom: 5rem;
+    }
+
+    .dsa-card {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-playful);
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: var(--transition-bounce);
+    }
+
+    .dsa-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 8px 8px 0 var(--color-ink);
+    }
+
+    .dsa-icon {
+      font-size: 2.75rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Timeline Stepper */
+    .timeline-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 5rem;
+      position: relative;
+    }
+
+    .step-card {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-small);
+      padding: 1.75rem 1.25rem;
+      position: relative;
+    }
+
+    .step-number {
+      font-family: var(--font-arcade);
+      font-size: 1.25rem;
+      background: var(--color-purple);
+      color: #FFFFFF;
+      width: 44px;
+      height: 44px;
+      border: var(--border-subtle);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow-tiny);
+    }
+
+    /* Live Queue Interactive Preview Banner */
+    .queue-preview-banner {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-large);
+      padding: 2.5rem;
+      margin-bottom: 5rem;
+    }
+
+    .queue-lane {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      overflow-x: auto;
+      padding-block: 1rem;
+    }
+
+    .queue-chip {
+      background: var(--color-yellow-light);
+      border: var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--text-sm);
+      box-shadow: var(--shadow-tiny);
+      white-space: nowrap;
+      animation: pop-in 0.3s ease-out;
+    }
+
+    .queue-chip.confirmed {
+      background: var(--color-green-light);
+      border-color: var(--color-green);
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .dsa-showcase-grid { grid-template-columns: 1fr; }
+      .timeline-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       Site Navigation Bar
+       ======================================================================== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-logo" aria-label="CampusPulse Home">
+        <span class="brand-icon">🎓</span>
+        <span>CampusPulse</span>
+      </a>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation menu">
+        ☰
+      </button>
+
+      <nav class="main-nav" id="mainNav">
+        <a href="events.html" class="nav-link">Explore Events</a>
+        <a href="dsa-lab.html" class="nav-link">DSA Lab 🕹️</a>
+        <a href="dashboard.html" class="nav-link" id="navDashboardLink" style="display: none;">My Dashboard</a>
+        <a href="admin.html" class="nav-link" id="navAdminLink" style="display: none;">Admin Console</a>
+        
+        <div class="nav-auth-group" id="navAuthGroup">
+          <a href="login.html" class="btn btn-ghost btn-sm" id="navLoginBtn">Sign In</a>
+          <a href="signup.html" class="btn btn-primary btn-sm" id="navSignupBtn">Join CampusPulse</a>
+          
+          <div class="user-badge" id="navUserBadge" style="display: none;">
+            <div class="user-avatar" id="navUserAvatar">S</div>
+            <span id="navUserName">Student</span>
+            <button class="btn btn-ghost btn-sm" id="navLogoutBtn" style="padding: 0.2rem 0.5rem; margin-left: 0.25rem;">Logout</button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       Main Content Container
+       ======================================================================== -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- HERO SECTION -->
+      <section class="hero-section">
+        <div class="hero-grid">
+          <div>
+            <div class="hero-badge-wrap">
+              <span class="category-sticker" style="position: static; display: inline-block;">
+                ⚡ Built with Real DSA &amp; 8-Bit Joy
+              </span>
+            </div>
+            <h1>
+              Never Miss a Seat. <br>
+              <span class="hero-title-highlight">Automated Waitlists</span> for College Fests.
+            </h1>
+            <p style="font-size: var(--text-lg); margin-top: 1rem;">
+              CampusPulse eliminates the chaos of manual event spreadsheets. Powered by authentic 
+              <strong>FIFO Queues</strong>, <strong>O(1) Hash Table duplicate checks</strong>, and <strong>Merge Sort</strong>, 
+              seats are protected and waitlisted peers are promoted instantly upon cancellation.
+            </p>
+
+            <div class="hero-actions">
+              <a href="events.html" class="btn btn-primary btn-lg">Explore Events 🎟️</a>
+              <a href="dsa-lab.html" class="btn btn-secondary btn-lg">Play in DSA Lab 🕹️</a>
+            </div>
+
+            <div style="display: flex; gap: 1.5rem; margin-top: 2rem; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: var(--text-xs);">
+                <span>🔒</span> <span>100% Capacity Protected</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: var(--text-xs);">
+                <span>⏱️</span> <span>Zero Wasted Seats</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: var(--text-xs);">
+                <span>👾</span> <span>Playful Neo-Arcade UI</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero Mascot Card -->
+          <div class="hero-mascot-card floating-element">
+            <div class="mascot-avatar">🤖</div>
+            <h3 style="margin-bottom: 0.25rem;">Byte the Mascot</h3>
+            <span class="badge-status badge-confirmed">System Ready • v1.0.0</span>
+            <div class="mascot-speech">
+              "When seats fill up, my FIFO Queue holds your spot with mathematical fairness!"
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DSA SUPERPOWERS SECTION (Scroll-Triggered) -->
+      <section style="margin-top: 4rem;">
+        <div class="section-header reveal-on-scroll">
+          <span class="section-tag">Computer Science in Action</span>
+          <h2>The Three Algorithmic Pillars</h2>
+          <p>CampusPulse runs genuine JavaScript data structure modules that solve genuine concurrency and ordering problems.</p>
+        </div>
+
+        <div class="dsa-showcase-grid">
+          <!-- Pillar 1: Queue -->
+          <div class="dsa-card reveal-on-scroll">
+            <div class="dsa-icon">⏳</div>
+            <span class="category-sticker" style="position: static; width: fit-content; margin-bottom: 0.75rem;">O(1) Enqueue / Dequeue</span>
+            <h3>1. FIFO Waiting List Queue</h3>
+            <p>
+              When capacity fills, students enter a first-in, first-out waiting queue. 
+              Implemented with a head-index pointer to prevent array shift overhead. 
+              When a confirmed attendee cancels, the queue head is promoted automatically.
+            </p>
+            <div style="margin-top: auto; padding-top: 1rem;">
+              <a href="dsa-lab.html" class="btn btn-ghost btn-sm">Inspect Queue &rarr;</a>
+            </div>
+          </div>
+
+          <!-- Pillar 2: Hash Table -->
+          <div class="dsa-card reveal-on-scroll" style="transition-delay: 0.15s;">
+            <div class="dsa-icon">⚡</div>
+            <span class="category-sticker" style="position: static; width: fit-content; margin-bottom: 0.75rem; background: var(--color-yellow);">O(1) Composite Hashing</span>
+            <h3>2. Duplicate Prevention Hash Table</h3>
+            <p>
+              Custom polynomial rolling hash table keyed by <code>eventId:userId</code>. 
+              Features explicit separate-chaining bucket arrays to resolve collisions and guarantee instant duplicate registration detection.
+            </p>
+            <div style="margin-top: auto; padding-top: 1rem;">
+              <a href="dsa-lab.html" class="btn btn-ghost btn-sm">Inspect Hash Table &rarr;</a>
+            </div>
+          </div>
+
+          <!-- Pillar 3: Merge Sort -->
+          <div class="dsa-card reveal-on-scroll" style="transition-delay: 0.3s;">
+            <div class="dsa-icon">📊</div>
+            <span class="category-sticker" style="position: static; width: fit-content; margin-bottom: 0.75rem; background: var(--color-cyan);">O(n log n) Stable Sort</span>
+            <h3>3. Multi-Criteria Merge Sort</h3>
+            <p>
+              Stable recursive divide-and-conquer sorting algorithm. Re-orders event catalogues 
+              and administrative participant rosters by upcoming date, title, available seats, 
+              or queue position while maintaining equality stability.
+            </p>
+            <div style="margin-top: auto; padding-top: 1rem;">
+              <a href="dsa-lab.html" class="btn btn-ghost btn-sm">Inspect Merge Sort &rarr;</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- LIVE QUEUE DEMO BANNER -->
+      <section class="queue-preview-banner reveal-on-scroll">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+          <div>
+            <span class="badge-status badge-waitlist">Live Visual Demo</span>
+            <h3 style="margin-top: 0.5rem; margin-bottom: 0.25rem;">Real-Time FIFO Waitlist Simulation</h3>
+            <p style="margin: 0; font-size: var(--text-sm);">Event Capacity: 3 Seats. Watch what happens when a confirmed attendee cancels!</p>
+          </div>
+          <button class="btn btn-danger btn-sm" id="btnSimulateCancel">Simulate Seat Cancellation 🔄</button>
+        </div>
+
+        <div class="queue-lane" id="demoQueueLane">
+          <div class="queue-chip confirmed" id="chipStudent1">🎟️ Seat 1: Alex M. (Confirmed)</div>
+          <div class="queue-chip confirmed" id="chipStudent2">🎟️ Seat 2: Priya S. (Confirmed)</div>
+          <div class="queue-chip confirmed" id="chipStudent3">🎟️ Seat 3: Jordan T. (Confirmed)</div>
+          <span style="font-weight: 800; color: var(--color-muted);">&#x2502; WAITLIST &rarr;</span>
+          <div class="queue-chip" id="chipWaitlist1">⏳ Rank 1: Liam K. (Waitlisted)</div>
+          <div class="queue-chip" id="chipWaitlist2">⏳ Rank 2: Maya R. (Waitlisted)</div>
+        </div>
+      </section>
+
+      <!-- 4-STEP HOW IT WORKS TIMELINE -->
+      <section>
+        <div class="section-header reveal-on-scroll">
+          <span class="section-tag">Smooth Student Workflow</span>
+          <h2>How CampusPulse Operates</h2>
+          <p>Zero spreadsheets. Zero manual emails. Fully automated fairness from registration to event day.</p>
+        </div>
+
+        <div class="timeline-grid">
+          <div class="step-card reveal-on-scroll">
+            <div class="step-number">01</div>
+            <h4>Discover</h4>
+            <p style="font-size: var(--text-sm);">Browse upcoming hackathons, tech talks, and cultural fests with live capacity gauges.</p>
+          </div>
+
+          <div class="step-card reveal-on-scroll" style="transition-delay: 0.1s;">
+            <div class="step-number">02</div>
+            <h4>Register</h4>
+            <p style="font-size: var(--text-sm);">One click reserves your seat. In-memory Hash Table blocks duplicate rapid clicking.</p>
+          </div>
+
+          <div class="step-card reveal-on-scroll" style="transition-delay: 0.2s;">
+            <div class="step-number">03</div>
+            <h4>Waitlist</h4>
+            <p style="font-size: var(--text-sm);">If the event is full, enter the FIFO waiting queue with a transparent, live rank badge.</p>
+          </div>
+
+          <div class="step-card reveal-on-scroll" style="transition-delay: 0.3s;">
+            <div class="step-number">04</div>
+            <h4>Promote</h4>
+            <p style="font-size: var(--text-sm);">If anyone cancels, the database atomically transfers the vacant seat to the next waitlisted peer.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CALL TO ACTION BANNER -->
+      <section style="background: var(--color-purple); color: #FFF; border: var(--border-strong); border-radius: var(--radius-card); box-shadow: var(--shadow-large); padding: clamp(2rem, 5vw, 4rem); text-align: center; margin-block: 2rem 4rem;" class="reveal-on-scroll">
+        <h2 style="color: #FFF; margin-bottom: 1rem;">Experience College Events the Right Way.</h2>
+        <p style="color: var(--color-purple-light); max-width: 60ch; margin-inline: auto; font-size: var(--text-lg); margin-bottom: 2rem;">
+          Join thousands of students registering for hackathons, workshops, and sports meets with mathematical fairness.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <a href="signup.html" class="btn btn-secondary btn-lg">Create Free Student Account 🚀</a>
+          <a href="events.html" class="btn btn-ghost btn-lg" style="background: rgba(255,255,255,0.15); color: #FFF; border-color: #FFF;">Browse Catalogue 📅</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       Site Footer
+       ======================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand-logo" style="display: inline-flex;">
+            <span class="brand-icon">🎓</span>
+            <span>CampusPulse</span>
+          </a>
+          <p>
+            An academic Data Structures &amp; Algorithms web application engineered for college event registration, 
+            duplicate prevention, and automated FIFO waiting list management.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Platform</h4>
+          <ul class="footer-links">
+            <li><a href="events.html">Events Catalogue</a></li>
+            <li><a href="dsa-lab.html">Interactive DSA Lab</a></li>
+            <li><a href="dashboard.html">Student Dashboard</a></li>
+            <li><a href="admin.html">Administrator Portal</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">DSA Systems</h4>
+          <ul class="footer-links">
+            <li><a href="dsa-lab.html?tab=queue">FIFO Waitlist Queue</a></li>
+            <li><a href="dsa-lab.html?tab=hashtable">Separate Chaining Hash Table</a></li>
+            <li><a href="dsa-lab.html?tab=mergesort">Stable Merge Sort</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Documentation</h4>
+          <ul class="footer-links">
+            <li><a href="../README.md">Project README</a></li>
+            <li><a href="../SINGLE_SOURCE_OF_TRUTH.md">Single Source of Truth</a></li>
+            <li><a href="../docs/DSA_ARCHITECTURE.md">DSA Architecture</a></li>
+            <li><a href="../docs/DATABASE_AND_API.md">API &amp; DB Specs</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 CampusPulse System. Academic DSA Project. All rights reserved.</div>
+        <div class="dsa-status-pills">
+          <span class="dsa-pill">QUEUE: ACTIVE</span>
+          <span class="dsa-pill">HASH_TABLE: O(1)</span>
+          <span class="dsa-pill">MERGE_SORT: READY</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="js/pages/landing.js"></script>
+</body>
+</html>

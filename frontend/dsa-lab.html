@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSA Interactive Laboratory — CampusPulse</title>
+  
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <style>
+    .lab-hero-card {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-medium);
+      padding: 2.25rem;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .lab-tabs-bar {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .lab-tab-btn {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-pill);
+      padding: 0.75rem 1.5rem;
+      font-family: var(--font-display);
+      font-size: var(--text-sm);
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow-small);
+      transition: var(--transition-bounce);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .lab-tab-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: var(--shadow-medium);
+    }
+
+    .lab-tab-btn.active {
+      background: var(--color-ink);
+      color: #FFFFFF;
+      transform: translate(1px, 1px);
+      box-shadow: var(--shadow-active);
+    }
+
+    .visualizer-workbench {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-medium);
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .controls-panel {
+      background: var(--color-paper);
+      border: var(--border-medium);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* Queue Visualizer Specifics */
+    .queue-stage {
+      min-height: 220px;
+      background: #FDFBF7;
+      border: 3px dashed var(--color-ink);
+      border-radius: var(--radius-sm);
+      padding: 1.5rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      gap: 1.25rem;
+    }
+
+    .queue-node {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      padding: 1rem;
+      min-width: 140px;
+      text-align: center;
+      box-shadow: var(--shadow-small);
+      position: relative;
+      animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      flex-shrink: 0;
+    }
+
+    .queue-node.head-node {
+      border-color: var(--color-green);
+      background: var(--color-green-light);
+    }
+
+    .queue-pointer {
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-display);
+      font-size: var(--text-xs);
+      font-weight: 800;
+      color: var(--color-ink);
+      white-space: nowrap;
+    }
+
+    /* Hash Table Visualizer Specifics */
+    .bucket-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .bucket-card {
+      background: var(--color-paper);
+      border: var(--border-medium);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      min-height: 120px;
+      box-shadow: var(--shadow-tiny);
+    }
+
+    .bucket-header {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      color: var(--color-ink-muted);
+      border-bottom: 1px dashed var(--color-ink);
+      padding-bottom: 0.4rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .chain-node {
+      background: var(--color-surface);
+      border: var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0.75rem;
+      margin-bottom: 0.5rem;
+      font-size: var(--text-xs);
+      box-shadow: var(--shadow-tiny);
+      position: relative;
+      animation: fadeIn 0.2s ease-in;
+    }
+
+    .chain-node::after {
+      content: '↓';
+      position: absolute;
+      bottom: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: var(--color-ink-muted);
+      font-weight: bold;
+    }
+
+    .chain-node:last-child::after {
+      display: none;
+    }
+
+    /* Merge Sort Visualizer Specifics */
+    .bars-container {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 0.75rem;
+      height: 240px;
+      padding: 1.5rem;
+      background: #FDFBF7;
+      border: 3px dashed var(--color-ink);
+      border-radius: var(--radius-sm);
+      margin-bottom: 1.5rem;
+    }
+
+    .sort-bar {
+      background: var(--color-purple);
+      border: var(--border-medium);
+      border-radius: 4px 4px 0 0;
+      width: 44px;
+      text-align: center;
+      color: #FFFFFF;
+      font-family: var(--font-display);
+      font-size: var(--text-xs);
+      font-weight: 800;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding-bottom: 0.5rem;
+      transition: height 0.3s ease, background-color 0.2s ease;
+      box-shadow: var(--shadow-tiny);
+    }
+
+    .sort-bar.comparing {
+      background: var(--color-yellow) !important;
+      color: var(--color-ink) !important;
+      transform: scaleY(1.05);
+    }
+
+    .sort-bar.merged {
+      background: var(--color-green) !important;
+    }
+
+    .algo-doc-box {
+      background: var(--color-paper);
+      border: var(--border-medium);
+      border-radius: var(--radius-sm);
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      font-size: var(--text-sm);
+      line-height: 1.6;
+    }
+
+    .log-stream {
+      background: #111420;
+      color: #10B981;
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      max-height: 180px;
+      overflow-y: auto;
+      border: 2px solid var(--color-ink);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-logo" aria-label="CampusPulse Home">
+        <span class="brand-icon">🎓</span>
+        <span>CampusPulse</span>
+      </a>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation">☰</button>
+
+      <nav class="main-nav" id="mainNav">
+        <a href="events.html" class="nav-link">Explore Events</a>
+        <a href="dsa-lab.html" class="nav-link active">DSA Lab 🕹️</a>
+        <a href="dashboard.html" class="nav-link" id="navDashboardLink" style="display: none;">My Dashboard</a>
+        <a href="admin.html" class="nav-link" id="navAdminLink" style="display: none;">Admin Console</a>
+        
+        <div class="nav-auth-group" id="navAuthGroup">
+          <a href="login.html" class="btn btn-ghost btn-sm" id="navLoginBtn">Sign In</a>
+          <a href="signup.html" class="btn btn-primary btn-sm" id="navSignupBtn">Join CampusPulse</a>
+          
+          <div class="user-badge" id="navUserBadge" style="display: none;">
+            <div class="user-avatar" id="navUserAvatar">S</div>
+            <span id="navUserName">Student</span>
+            <button class="btn btn-ghost btn-sm" id="navLogoutBtn" style="padding: 0.2rem 0.5rem; margin-left: 0.25rem;">Logout</button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="container">
+
+      <!-- Lab Header -->
+      <section class="lab-hero-card">
+        <span class="category-sticker" style="position: static; display: inline-block; margin-bottom: 0.5rem;">
+          🕹️ Interactive Computer Science Arena
+        </span>
+        <h1 style="margin-bottom: 0.5rem;">Academic DSA Interactive Laboratory</h1>
+        <p style="font-size: var(--text-base); color: var(--color-ink-muted); margin: 0; max-width: 800px;">
+          Experience the authentic algorithms governing CampusPulse. Every simulation executes genuine Data Structures: 
+          <strong>FIFO Queues</strong>, <strong>Polynomial Hash Tables</strong>, and <strong>Stable Merge Sort</strong>.
+        </p>
+      </section>
+
+      <!-- Navigation Tabs -->
+      <div class="lab-tabs-bar">
+        <button class="lab-tab-btn active" data-tab="queue">
+          <span>🚂</span> FIFO Waiting Queue
+        </button>
+        <button class="lab-tab-btn" data-tab="hashtable">
+          <span>🗄️</span> Hash Table Collision Chaining
+        </button>
+        <button class="lab-tab-btn" data-tab="mergesort">
+          <span>⚡</span> Merge Sort Step-by-Step
+        </button>
+      </div>
+
+      <!-- ===================================================================
+           TAB 1: FIFO QUEUE LAB
+           =================================================================== -->
+      <section id="queueLab" class="visualizer-workbench">
+        <div style="margin-bottom: 1.5rem;">
+          <h2 style="margin: 0 0 0.25rem 0;">First-In, First-Out (FIFO) Waiting Queue</h2>
+          <p style="color: var(--color-ink-muted); margin: 0; font-size: var(--text-sm);">
+            Guarantees chronological fairness when college venues reach full capacity. Enqueue adds to the tail; Dequeue promotes from the head in $O(1)$.
+          </p>
+        </div>
+
+        <div class="controls-panel">
+          <input type="text" id="queueInputName" class="input-text" placeholder="Applicant Name (e.g. Maya Lin)" style="max-width: 260px;">
+          <button id="enqueueBtn" class="btn btn-primary btn-sm">➕ Enqueue (Tail)</button>
+          <button id="dequeueBtn" class="btn btn-secondary btn-sm">🚀 Dequeue & Promote (Head)</button>
+          <button id="peekQueueBtn" class="btn btn-ghost btn-sm">👀 Peek Head</button>
+          <button id="clearQueueBtn" class="btn btn-ghost btn-sm" style="color: var(--color-coral);">🗑️ Reset</button>
+          <div style="margin-left: auto; font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 700;">
+            Length: <span id="queueLengthDisplay">0</span> | Head Index: <span id="queueHeadDisplay">0</span>
+          </div>
+        </div>
+
+        <!-- Visual Stage -->
+        <div class="queue-stage" id="queueStage">
+          <div style="color: var(--color-ink-muted); font-size: var(--text-sm); margin: auto;">
+            Queue is empty. Type a student name and click <strong>Enqueue</strong> to begin!
+          </div>
+        </div>
+
+        <!-- DSA Explanations -->
+        <div class="algo-doc-box">
+          <h4 style="margin: 0 0 0.5rem 0;">💡 Why Head-Index Offset Matters ($O(1)$)</h4>
+          <p style="margin: 0;">
+            Standard <code>array.shift()</code> runs in $O(n)$ because it re-indexes every subsequent element. 
+            CampusPulse utilizes an internal <strong>head pointer index offset</strong>, achieving constant-time $O(1)$ dequeue operations without garbage collection overhead.
+          </p>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 2: HASH TABLE COLLISION LAB
+           =================================================================== -->
+      <section id="hashTableLab" class="visualizer-workbench" style="display: none;">
+        <div style="margin-bottom: 1.5rem;">
+          <h2 style="margin: 0 0 0.25rem 0;">Polynomial Hash Table & Separate Chaining</h2>
+          <p style="color: var(--color-ink-muted); margin: 0; font-size: var(--text-sm);">
+            Powers instant $O(1)$ duplicate registration checks using composite keys (<code>eventId:userId</code>) with separate chaining bucket arrays.
+          </p>
+        </div>
+
+        <div class="controls-panel">
+          <input type="text" id="hashKeyInput" class="input-text" placeholder="Key (e.g. evt_01:usr_42)" style="max-width: 220px;">
+          <input type="text" id="hashValInput" class="input-text" placeholder="Value (e.g. CONFIRMED)" style="max-width: 200px;">
+          <button id="hashSetBtn" class="btn btn-primary btn-sm">Set Key-Value</button>
+          <button id="hashGetBtn" class="btn btn-secondary btn-sm">Get Key</button>
+          <button id="hashDeleteBtn" class="btn btn-ghost btn-sm" style="color: var(--color-coral);">Delete Key</button>
+          <button id="hashDemoCollisionBtn" class="btn btn-ghost btn-sm">⚡ Cause Collision</button>
+        </div>
+
+        <!-- Live Hash Code Output -->
+        <div style="font-family: var(--font-mono); font-size: var(--text-xs); background: var(--color-paper); padding: 0.75rem 1rem; border: var(--border-subtle); border-radius: var(--radius-sm); margin-bottom: 1.5rem;" id="hashMathDisplay">
+          Type a key to observe real-time polynomial rolling hash computation: hash = &Sigma; charCode &times; 31^i (mod 8)
+        </div>
+
+        <!-- Buckets Visual Stage -->
+        <div class="bucket-grid" id="bucketGrid">
+          <!-- 8 buckets rendered dynamically -->
+        </div>
+
+        <div class="algo-doc-box">
+          <h4 style="margin: 0 0 0.5rem 0;">💡 Collision Resolution via Separate Chaining</h4>
+          <p style="margin: 0;">
+            When two distinct strings produce the same bucket index (collision), CampusPulse appends the node into a singly-linked chain at that bucket index. 
+            Average search time remains $O(1)$, degrading to $O(k)$ only where $k$ is chain length.
+          </p>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 3: MERGE SORT VISUALIZER LAB
+           =================================================================== -->
+      <section id="mergeSortLab" class="visualizer-workbench" style="display: none;">
+        <div style="margin-bottom: 1.5rem;">
+          <h2 style="margin: 0 0 0.25rem 0;">Divide-and-Conquer Stable Merge Sort</h2>
+          <p style="color: var(--color-ink-muted); margin: 0; font-size: var(--text-sm);">
+            Guarantees guaranteed $O(n \log n)$ performance across all data distributions, preserving original relative order (stability) when sorting events by date or popularity.
+          </p>
+        </div>
+
+        <div class="controls-panel">
+          <button id="generateRandomArrayBtn" class="btn btn-ghost btn-sm">🎲 Randomize Numbers</button>
+          <button id="startMergeSortBtn" class="btn btn-primary btn-sm">▶️ Run Step-by-Step Sort</button>
+          <button id="resetSortBtn" class="btn btn-ghost btn-sm">🔄 Reset Array</button>
+          <div style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem; font-size: var(--text-xs); font-weight: 700;">
+            <label for="speedRange">Animation Speed:</label>
+            <input type="range" id="speedRange" min="100" max="1000" value="400" step="50" style="width: 100px;">
+          </div>
+        </div>
+
+        <!-- Bars Visual Stage -->
+        <div class="bars-container" id="barsContainer">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Current Step Commentary -->
+        <div style="background: var(--color-paper); border: var(--border-medium); border-radius: var(--radius-sm); padding: 1rem; font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700; color: var(--color-ink);" id="sortStepStatus">
+          Click "Run Step-by-Step Sort" to witness divide-and-conquer recursion in real time!
+        </div>
+
+        <div class="algo-doc-box">
+          <h4 style="margin: 0 0 0.5rem 0;">💡 Stability & Recurrence Relation</h4>
+          <p style="margin: 0;">
+            Merge Sort recurrence: $T(n) = 2T(n/2) + O(n)$. By Master Theorem, $T(n) \in \Theta(n \log n)$ in Best, Average, and Worst cases. 
+            Because left elements take precedence when equal (<code>left[i] &le; right[j]</code>), it maintains absolute sorting stability.
+          </p>
+        </div>
+      </section>
+
+      <!-- Operation Console Logs -->
+      <section style="margin-top: 2rem;">
+        <h3 style="margin-bottom: 0.75rem;">📟 Terminal Audit Stream</h3>
+        <div class="log-stream" id="terminalLogs">
+          [00:00:00] [SYSTEM] CampusPulse DSA Laboratory initialized. Ready for operations.
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script type="module" src="js/pages/dsa-lab.js"></script>
+</body>
+</html>

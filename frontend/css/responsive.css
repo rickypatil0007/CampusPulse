@@ -1,0 +1,136 @@
+/* ==========================================================================
+   CampusPulse Responsive Breakpoint Overrides
+   ========================================================================== */
+
+/* ==========================================================================
+   Tablet Devices (max-width: 1024px)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .event-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+/* ==========================================================================
+   Mobile Devices (max-width: 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .header-inner {
+    height: 70px;
+  }
+
+  .mobile-menu-btn {
+    display: inline-flex;
+  }
+
+  .main-nav {
+    display: none;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background-color: var(--color-paper);
+    border-bottom: var(--border-strong);
+    box-shadow: var(--shadow-playful);
+    padding: 1.5rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .main-nav.nav-open {
+    display: flex;
+  }
+
+  .nav-link {
+    padding: 0.85rem 1rem;
+    border: var(--border-subtle);
+    background: var(--color-surface);
+  }
+
+  .nav-auth-group {
+    flex-direction: column;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--color-muted);
+  }
+
+  .nav-auth-group .btn {
+    width: 100%;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .event-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-section {
+    padding-block: 2.5rem 3.5rem !important;
+    text-align: center;
+  }
+
+  .hero-actions {
+    justify-content: center !important;
+    flex-direction: column;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
+  .card-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .card-actions .btn {
+    width: 100%;
+  }
+}
+
+/* ==========================================================================
+   Small Mobile (max-width: 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+  .container {
+    padding-inline: 1rem;
+  }
+
+  .brand-logo {
+    font-size: 1.15rem;
+    padding: 0.25rem 0.6rem;
+  }
+
+  .form-card {
+    padding: 1.5rem 1rem;
+    box-shadow: var(--shadow-small);
+  }
+
+  .toast {
+    min-width: auto;
+    width: calc(100vw - 32px);
+  }
+
+  .toast-container {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+  }
+}

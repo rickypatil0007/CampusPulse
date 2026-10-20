@@ -1,0 +1,85 @@
+/* ==========================================================================
+   CampusPulse Animations & Micro-Interactions
+   ========================================================================== */
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Playful sticker hover wobble */
+@keyframes sticker-wobble {
+  0%, 100% { transform: rotate(-3deg); }
+  33% { transform: rotate(-6deg) scale(1.05); }
+  66% { transform: rotate(1deg) scale(1.05); }
+}
+
+.category-sticker:hover {
+  animation: sticker-wobble 0.35s ease-in-out;
+}
+
+/* Subtle Floating Animation for Hero illustrations */
+@keyframes float-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.floating-element {
+  animation: float-subtle 4s ease-in-out infinite;
+}
+
+/* Arcade Badge Pulse */
+@keyframes pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+.pulse-badge {
+  animation: pulse-badge 2s infinite ease-in-out;
+}
+
+/* ==========================================================================
+   ACCESSIBILITY: PREFERS-REDUCED-MOTION
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .event-card:hover,
+  .btn:hover,
+  .category-sticker:hover {
+    transform: none !important;
+  }
+}

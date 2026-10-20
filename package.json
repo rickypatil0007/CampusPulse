@@ -1,0 +1,22 @@
+{
+  "name": "campuspulse",
+  "version": "1.0.0",
+  "description": "CampusPulse — College Event Registration & Waitlist Management System",
+  "type": "module",
+  "scripts": {
+    "start": "npm --prefix backend start",
+    "dev": "npm --prefix backend run dev",
+    "test": "npm --prefix backend test"
+  },
+  "keywords": [
+    "campus",
+    "events",
+    "waitlist",
+    "dsa",
+    "queue",
+    "hash-table",
+    "merge-sort"
+  ],
+  "author": "CampusPulse Team",
+  "license": "ISC"
+}

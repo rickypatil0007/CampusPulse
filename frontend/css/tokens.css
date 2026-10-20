@@ -1,0 +1,87 @@
+/* ==========================================================================
+   CampusPulse Neo-Arcade Maximalist Design Tokens
+   Authoritative Reference: docs/DESIGN_SYSTEM_MAXIMALIST_8BIT.md
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@400;500;600;700&family=Press+Start+2P&family=Space+Grotesk:wght@500;700;800&display=swap');
+
+:root {
+  /* ========================================================================
+     Color Palette (Neo-Arcade Palette)
+     ======================================================================== */
+  --color-ink: #242044;          /* Midnight Deep Ink (Borders, Text, Hard Shadows) */
+  --color-paper: #FFF9EF;        /* Cream Parchment Background */
+  --color-surface: #FFFFFF;      /* Clean White Surface (Cards, Modals) */
+  --color-surface-tint: #FDF4E5; /* Subtle Warm Surface */
+
+  --color-purple: #7856FF;       /* Electric Purple (Brand Primary, Accents) */
+  --color-purple-light: #ECE8FF; /* Light Lavender Tint */
+  --color-purple-dark: #5833E6;  /* Deep Purple for Active States */
+
+  --color-pink: #FF72B6;         /* Bubblegum Pink (Callouts, Stickers) */
+  --color-pink-light: #FFEBF4;   /* Soft Pink Tint */
+
+  --color-yellow: #FFD95A;       /* Arcade Yellow (Waitlist, Warnings) */
+  --color-yellow-light: #FFF8E1; /* Soft Buttercream */
+
+  --color-cyan: #75E5F5;         /* Neon Cyan (Technical Events, Cool Accents) */
+  --color-cyan-light: #EBFBFE;   /* Minty Blue Ice */
+
+  --color-green: #8BE3A1;        /* Mint Green (Confirmed Status, Success) */
+  --color-green-light: #EBFBF0;  /* Pale Mint Tint */
+
+  --color-muted: #756F89;        /* Secondary Text & Metadata */
+  --color-border: #242044;       /* Primary Border Color */
+  --color-danger: #FF5252;       /* Action Danger (Cancellations, Errors) */
+  --color-danger-light: #FFEBEE; /* Light Red Surface */
+
+  /* ========================================================================
+     Typography & Font Stacks
+     ======================================================================== */
+  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-arcade: 'Press Start 2P', monospace;
+  --font-mono: 'Fira Code', 'Courier New', monospace;
+
+  /* Type Scale */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 2rem;      /* 32px */
+  --text-4xl: 2.75rem;   /* 44px */
+  --text-5xl: 3.5rem;    /* 56px */
+
+  /* ========================================================================
+     Borders & Tactile Geometry
+     ======================================================================== */
+  --border-width-sm: 2px;
+  --border-width-md: 3px;
+  --border-width-lg: 4px;
+
+  --border-strong: var(--border-width-md) solid var(--color-ink);
+  --border-subtle: var(--border-width-sm) solid var(--color-ink);
+
+  --radius-xs: 6px;
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-card: 24px;   /* Playful, friendly rounded corners */
+  --radius-pill: 9999px; /* Pill badges and action buttons */
+
+  /* ========================================================================
+     Hard Drop Shadows (Tactile Neo-Brutalist 8-Bit Offsets)
+     ======================================================================== */
+  --shadow-tiny: 2px 2px 0 var(--color-ink);
+  --shadow-small: 3px 3px 0 var(--color-ink);
+  --shadow-playful: 6px 6px 0 var(--color-ink);
+  --shadow-large: 10px 10px 0 var(--color-ink);
+  --shadow-active: 1px 1px 0 var(--color-ink); /* Pressed down state */
+
+  /* ========================================================================
+     Transitions & Motion
+     ======================================================================== */
+  --transition-bounce: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-fast: all 0.15s ease-out;
+}

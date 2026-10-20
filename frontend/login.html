@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — CampusPulse</title>
+  
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-logo" aria-label="CampusPulse Home">
+        <span class="brand-icon">🎓</span>
+        <span>CampusPulse</span>
+      </a>
+      <a href="index.html" class="btn btn-ghost btn-sm">&larr; Back to Home</a>
+    </div>
+  </header>
+
+  <main class="main-content" style="display: flex; align-items: center; justify-content: center;">
+    <div class="container">
+      <div class="form-card">
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <span class="category-sticker" style="position: static; display: inline-block; margin-bottom: 0.5rem;">
+            🔐 Secure Access
+          </span>
+          <h2 style="margin-bottom: 0.5rem;">Welcome Back!</h2>
+          <p style="font-size: var(--text-sm); margin: 0;">Sign in to view your tickets, waitlist ranks, and event catalogue.</p>
+        </div>
+
+        <form id="loginForm" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="loginEmail">College Email</label>
+            <input type="email" id="loginEmail" class="input-text" placeholder="student@college.edu" required autocomplete="email">
+            <div class="error-text" id="emailError" style="display: none;"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" class="input-text" placeholder="••••••••" required autocomplete="current-password">
+            <div class="error-text" id="passwordError" style="display: none;"></div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 1rem;" id="btnLoginSubmit">
+            Log In &rarr;
+          </button>
+        </form>
+
+        <!-- Academic Demo Credentials Helper -->
+        <div style="margin-top: 2rem; padding: 1.25rem; background: var(--color-surface-tint); border: 2px dashed var(--color-ink); border-radius: var(--radius-sm); text-align: center;">
+          <div style="font-family: var(--font-display); font-weight: 700; font-size: var(--text-sm); text-transform: uppercase; margin-bottom: 0.35rem; color: var(--color-ink);">
+            ⚡ 1-Click Instant Demo Login
+          </div>
+          <p style="font-size: var(--text-xs); color: var(--color-ink-muted); margin-bottom: 1rem;">
+            Click below for instant one-click login into either evaluation role:
+          </p>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary btn-sm" id="btnFillStudent" style="flex: 1; min-width: 150px; font-weight: 700;">
+              🎓 Student Demo
+            </button>
+            <button type="button" class="btn btn-accent btn-sm" id="btnFillAdmin" style="flex: 1; min-width: 150px; font-weight: 700;">
+              🛡️ Admin Demo
+            </button>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 1.5rem; font-size: var(--text-sm);">
+          Don't have an account yet? <a href="signup.html">Create Student Account</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { Auth } from './js/auth.js';
+    import { setButtonLoading, showToast } from './js/ui.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('loginForm');
+      const emailInput = document.getElementById('loginEmail');
+      const passInput = document.getElementById('loginPassword');
+      const btnSubmit = document.getElementById('btnLoginSubmit');
+      const btnStudent = document.getElementById('btnFillStudent');
+      const btnAdmin = document.getElementById('btnFillAdmin');
+
+      // 1-Click Instant Demo Login Handlers
+      async function triggerDemoLogin(role) {
+        const isAdmin = role === 'admin';
+        const activeBtn = isAdmin ? btnAdmin : btnStudent;
+
+        emailInput.value = isAdmin ? 'faculty.admin@college.edu' : 'alex.mercer@college.edu';
+        passInput.value = isAdmin ? 'AdminPass123!' : 'StudentPass123!';
+
+        setButtonLoading(activeBtn, true, isAdmin ? 'Signing in as Admin...' : 'Signing in as Student...');
+        try {
+          await Auth.loginDemo(role);
+          showToast(`Welcome back, ${isAdmin ? 'Faculty Coordinator' : 'Alex Mercer'}! Redirecting...`, 'success');
+
+          const params = new URLSearchParams(window.location.search);
+          const redirect = params.get('redirect');
+
+          setTimeout(() => {
+            if (redirect) {
+              window.location.href = decodeURIComponent(redirect);
+            } else if (isAdmin) {
+              window.location.href = 'admin.html';
+            } else {
+              window.location.href = 'dashboard.html';
+            }
+          }, 350);
+        } catch (err) {
+          setButtonLoading(activeBtn, false);
+          showToast(err.message || 'Demo login failed.', 'error');
+        }
+      }
+
+      btnStudent.addEventListener('click', () => triggerDemoLogin('student'));
+      btnAdmin.addEventListener('click', () => triggerDemoLogin('admin'));
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = emailInput.value.trim();
+        const password = passInput.value;
+
+        if (!email || !password) {
+          showToast('Please enter both email and password.', 'error');
+          return;
+        }
+
+        try {
+          setButtonLoading(btnSubmit, true, 'Signing in...');
+          const data = await Auth.login(email, password);
+          showToast('Login successful! Redirecting...', 'success');
+
+          const user = Auth.getCurrentUser();
+          const params = new URLSearchParams(window.location.search);
+          const redirect = params.get('redirect');
+
+          setTimeout(() => {
+            if (redirect) {
+              window.location.href = decodeURIComponent(redirect);
+            } else if (user && user.role === 'admin') {
+              window.location.href = 'admin.html';
+            } else {
+              window.location.href = 'dashboard.html';
+            }
+          }, 350);
+        } catch (err) {
+          setButtonLoading(btnSubmit, false);
+          showToast(err.message || 'Failed to sign in. Check your credentials.', 'error');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

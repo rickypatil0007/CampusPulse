@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard — CampusPulse</title>
+  
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <style>
+    .dashboard-header {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-medium);
+      padding: 2.25rem;
+      margin-bottom: 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat-card-retro {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-small);
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card-retro::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: var(--color-purple);
+    }
+
+    .stat-card-retro.stat-confirmed::before { background: var(--color-green); }
+    .stat-card-retro.stat-waitlist::before { background: var(--color-yellow); }
+    .stat-card-retro.stat-upcoming::before { background: var(--color-coral); }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-family: var(--font-display);
+      font-weight: 800;
+      color: var(--color-ink);
+      line-height: 1;
+      margin: 0.5rem 0 0.25rem 0;
+    }
+
+    .stat-label {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-ink-muted);
+    }
+
+    .ticket-pass-card {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-small);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: var(--transition-bounce);
+    }
+
+    .ticket-pass-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: var(--shadow-medium);
+    }
+
+    .ticket-pass-top {
+      padding: 1.25rem 1.5rem;
+      background: var(--color-paper);
+      border-bottom: 2px dashed var(--color-ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ticket-pass-body {
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .queue-rank-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--color-yellow-light);
+      border: 2px solid var(--color-yellow);
+      color: #92400E;
+      font-family: var(--font-display);
+      font-weight: 800;
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius-pill);
+      font-size: var(--text-sm);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-logo" aria-label="CampusPulse Home">
+        <span class="brand-icon">🎓</span>
+        <span>CampusPulse</span>
+      </a>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation">☰</button>
+
+      <nav class="main-nav" id="mainNav">
+        <a href="events.html" class="nav-link">Explore Events</a>
+        <a href="dsa-lab.html" class="nav-link">DSA Lab 🕹️</a>
+        <a href="dashboard.html" class="nav-link active" id="navDashboardLink">My Dashboard</a>
+        <a href="my-registrations.html" class="nav-link">My Passes</a>
+        <a href="admin.html" class="nav-link" id="navAdminLink" style="display: none;">Admin Console</a>
+        
+        <div class="nav-auth-group" id="navAuthGroup">
+          <div class="user-badge" id="navUserBadge">
+            <div class="user-avatar" id="navUserAvatar">S</div>
+            <span id="navUserName">Student</span>
+            <button class="btn btn-ghost btn-sm" id="navLogoutBtn" style="padding: 0.2rem 0.5rem; margin-left: 0.25rem;">Logout</button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="container">
+
+      <!-- Student Banner -->
+      <section class="dashboard-header">
+        <div>
+          <span class="category-sticker" style="position: static; display: inline-block; margin-bottom: 0.5rem;">
+            🎓 Student Portal
+          </span>
+          <h1 id="studentGreeting" style="margin-bottom: 0.25rem;">Welcome back!</h1>
+          <p id="studentEmail" style="color: var(--color-ink-muted); font-weight: 600; margin: 0;">Loading profile...</p>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <a href="events.html" class="btn btn-primary">
+            ➕ Discover Events
+          </a>
+          <a href="my-registrations.html" class="btn btn-secondary">
+            📋 Full History
+          </a>
+        </div>
+      </section>
+
+      <!-- Stats Overview Row -->
+      <section class="stats-row">
+        <div class="stat-card-retro stat-confirmed">
+          <div class="stat-label">Confirmed Seats</div>
+          <div class="stat-value" id="statConfirmedCount">0</div>
+          <div style="font-size: var(--text-xs); color: var(--color-green-dark); font-weight: 700;">Guaranteed Entry 🎟️</div>
+        </div>
+
+        <div class="stat-card-retro stat-waitlist">
+          <div class="stat-label">Waitlist Queues</div>
+          <div class="stat-value" id="statWaitlistCount">0</div>
+          <div style="font-size: var(--text-xs); color: #B45309; font-weight: 700;">Auto-Promote Active ⏳</div>
+        </div>
+
+        <div class="stat-card-retro stat-upcoming">
+          <div class="stat-label">Next Event In</div>
+          <div class="stat-value" id="statNextEventDays" style="font-size: 1.75rem; margin-top: 0.75rem;">—</div>
+          <div style="font-size: var(--text-xs); color: var(--color-coral); font-weight: 700;" id="statNextEventTitle">No events yet</div>
+        </div>
+      </section>
+
+      <!-- Confirmed Passes Section -->
+      <section style="margin-bottom: 3rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="margin: 0;">🎟️ Confirmed Event Passes</h2>
+            <p style="color: var(--color-ink-muted); margin: 0; font-size: var(--text-sm);">Present these confirmed passes at check-in</p>
+          </div>
+          <a href="events.html" class="btn btn-ghost btn-sm">Find More &rarr;</a>
+        </div>
+
+        <div class="event-grid" id="confirmedPassesContainer">
+          <!-- Rendered by dashboard.js -->
+        </div>
+      </section>
+
+      <!-- Active Waiting Lists Section -->
+      <section style="margin-bottom: 3rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="margin: 0;">⏳ Active Waiting List Spots</h2>
+            <p style="color: var(--color-ink-muted); margin: 0; font-size: var(--text-sm);">FIFO queue positions tracked in real time</p>
+          </div>
+        </div>
+
+        <div class="event-grid" id="waitlistSpotsContainer">
+          <!-- Rendered by dashboard.js -->
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script type="module" src="js/pages/dashboard.js"></script>
+</body>
+</html>

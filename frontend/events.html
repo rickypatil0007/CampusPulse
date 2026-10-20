@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events Catalogue — CampusPulse</title>
+  
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <style>
+    .filter-bar {
+      background: var(--color-surface);
+      border: var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-small);
+      padding: 1.5rem;
+      margin-bottom: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .filter-controls-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .category-pills-row {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+    }
+
+    .pill-filter {
+      background: var(--color-paper);
+      border: var(--border-subtle);
+      border-radius: var(--radius-pill);
+      padding: 0.35rem 0.95rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--text-xs);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition-fast);
+      box-shadow: var(--shadow-tiny);
+    }
+
+    .pill-filter:hover {
+      background: var(--color-purple-light);
+      color: var(--color-purple);
+    }
+
+    .pill-filter.active {
+      background: var(--color-ink);
+      color: #FFFFFF;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-logo" aria-label="CampusPulse Home">
+        <span class="brand-icon">🎓</span>
+        <span>CampusPulse</span>
+      </a>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation">☰</button>
+
+      <nav class="main-nav" id="mainNav">
+        <a href="events.html" class="nav-link active">Explore Events</a>
+        <a href="dsa-lab.html" class="nav-link">DSA Lab 🕹️</a>
+        <a href="dashboard.html" class="nav-link" id="navDashboardLink" style="display: none;">My Dashboard</a>
+        <a href="admin.html" class="nav-link" id="navAdminLink" style="display: none;">Admin Console</a>
+        
+        <div class="nav-auth-group" id="navAuthGroup">
+          <a href="login.html" class="btn btn-ghost btn-sm" id="navLoginBtn">Sign In</a>
+          <a href="signup.html" class="btn btn-primary btn-sm" id="navSignupBtn">Join CampusPulse</a>
+          
+          <div class="user-badge" id="navUserBadge" style="display: none;">
+            <div class="user-avatar" id="navUserAvatar">S</div>
+            <span id="navUserName">Student</span>
+            <button class="btn btn-ghost btn-sm" id="navLogoutBtn" style="padding: 0.2rem 0.5rem; margin-left: 0.25rem;">Logout</button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="container">
+      
+      <div style="margin-bottom: 2rem;">
+        <span class="category-sticker" style="position: static; display: inline-block; margin-bottom: 0.5rem;">
+          📅 Live Campus Schedule
+        </span>
+        <h1>Explore College Events</h1>
+        <p style="font-size: var(--text-lg); margin: 0;">
+          Discover hackathons, symposiums, and cultural competitions with guaranteed capacity protection and fair FIFO waiting lists.
+        </p>
+      </div>
+
+      <!-- FILTER & SORT CONTROLS BAR -->
+      <section class="filter-bar">
+        <div class="filter-controls-row">
+          <div style="flex: 1; min-width: 260px;">
+            <input type="search" id="searchInput" class="input-text" placeholder="🔍 Search events by title, venue, or keyword...">
+          </div>
+
+          <!-- Merge Sort Trigger Dropdown -->
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <label for="sortDropdown" class="form-label" style="margin: 0; white-space: nowrap;">⚡ Sort (Merge Sort):</label>
+            <select id="sortDropdown" class="select-box" style="width: auto;">
+              <option value="byDateAscending">Upcoming Date (Earliest)</option>
+              <option value="byTitleAscending">Event Title (A &rarr; Z)</option>
+              <option value="byRemainingSeats">Remaining Seats (Most)</option>
+              <option value="byPopularity">Popularity (Most Confirmed)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Category Pills -->
+        <div class="category-pills-row" id="categoryPills">
+          <button class="pill-filter active" data-category="All">All Categories</button>
+          <button class="pill-filter" data-category="Hackathon">Hackathons 💻</button>
+          <button class="pill-filter" data-category="Workshop">Workshops 🛠️</button>
+          <button class="pill-filter" data-category="Technical">Technical ⚡</button>
+          <button class="pill-filter" data-category="Cultural">Cultural 🎸</button>
+          <button class="pill-filter" data-category="Sports">Sports ♟️</button>
+          <button class="pill-filter" data-category="Entrepreneurship">Pitch 💡</button>
+        </div>
+      </section>
+
+      <!-- EVENTS GRID -->
+      <div class="event-grid" id="eventsGridContainer">
+        <!-- Rendered dynamically by events.js -->
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module" src="js/pages/events.js"></script>
+</body>
+</html>
